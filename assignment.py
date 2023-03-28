@@ -26,6 +26,7 @@ class Character:
 
 
 class Monster(Character): #몬스터 클래스 Character상속
+    super
     # def __init__(self, name, hp, power):
     #     # super()를 사용하면 부모 클래스의 코드를 그대로 사용할 수 있습니다.
     #     # 해당 코드는 self.hp = hp 코드를 실행시키는 것과 동일합니다.
@@ -61,6 +62,7 @@ class Player(Character): #플레이어 클래스 Character상속
 
 #몬스터 임의 생성
 def monsterGen():
+    # 이름에 따른 체력 공격력의 변화를 주어보았음.
     nameList1 = ['크고','', '작고']
     nameList2 = ['강인한','평범한', '나약한']
     nameList3 = ['멧돼지','돼지','닭']
@@ -92,6 +94,7 @@ def chooseAttack(num, player, monster):
 
 def turn(player, monster):
     while(1):
+        # 주도권이 더 높은 쪽이 선공
         monInitiative = random.randrange(1,21)
         playerInitiative = random.randrange(1,21)
         print(f'\n당신의 주도권은 {playerInitiative}. {monster.name}의 주도권은 {monInitiative}.')
