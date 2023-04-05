@@ -26,15 +26,14 @@ class Character:
 
 
 class Monster(Character): #몬스터 클래스 Character상속
-    super
+        
     # def __init__(self, name, hp, power):
     #     # super()를 사용하면 부모 클래스의 코드를 그대로 사용할 수 있습니다.
     #     # 해당 코드는 self.hp = hp 코드를 실행시키는 것과 동일합니다.
     #     super().__init__(name, hp, power)
-
-
-
-
+    def monIniti(self, initi):  # random모듈의 randrange로 주도권 결정메서드 1,21의 사이에서
+        self.initi = initi.random.randrange(1, 21)
+        super().__init__(name, hp, power)
 
 
 class Player(Character): #플레이어 클래스 Character상속
@@ -63,17 +62,17 @@ class Player(Character): #플레이어 클래스 Character상속
 #몬스터 임의 생성
 def monsterGen():
     # 이름에 따른 체력 공격력의 변화를 주어보았음.
-    nameList1 = ['크고','', '작고']
-    nameList2 = ['강인한','평범한', '나약한']
-    nameList3 = ['멧돼지','돼지','닭']
+    nameList1 = ['크고','', '작고'] # 몬스터 이름 형용사
+    nameList2 = ['강인한','평범한', '나약한'] # 몬스터 속성 리스트
+    nameList3 = ['멧돼지','돼지','닭'] # 몬스터 이름 리스트
     name1 = random.randrange(0,3)
     name2 = random.randrange(0,3)
     name3 = random.randrange(0,3)
-    monName = nameList1[name1]+nameList2[name2]+nameList3[name3]
+    monName = nameList1[name1]+nameList2[name2]+nameList3[name3] #monName은 몬스터 이름
 
     baseHp = random.randrange(80,121) #몬스터 기본체력
     addHp = ((3-name1)+(3-name2)+(3-name3))*10 #이름에 따른 추가 체력
-    monHp = baseHp+addHp
+    monHp = baseHp+addHp #몬스터 체력
 
     basePower = random.randrange(8,13)
     addPower = ((3-name1)+(3-name2)+(3-name3))
@@ -92,48 +91,63 @@ def chooseAttack(num, player, monster):
         num = int(input())
         chooseAttack(num, player, monster)
 
+def check_initi(monster): # 플레이어는 빠졌다?
+   monInitiative = random.randrange(1, 21)
+   playerInitiative = random.randrange(1, 21)
+   print(f'\n당신의 주도권은 {playerInitiative}. {monster.name}의 주도권은 {monInitiative}.')
+   if playerInitiative >= monInitiative:
+       return 1 #플레이어가 이긴상황
+   else:
+       return 2 #
+
+def check_status(player, monster):
+# return은 조건을 만족하는 값을 반환하거나 패스한다. 
+# 즉 더이상 조건을 지정할 필요가 없다면 return자체 호출       
+    if (monster.hp <= 0):
+        print('You Win!')
+        return 1 #죽었을 떄
+    
+    if(player.hp <= 0):
+        print('You Lose!')
+        return 1 
+ 
+    return 2 #죽지않은 상황
+
 def turn(player, monster):
-    while(1):
-        # 주도권이 더 높은 쪽이 선공
-        monInitiative = random.randrange(1,21)
-        playerInitiative = random.randrange(1,21)
-        print(f'\n당신의 주도권은 {playerInitiative}. {monster.name}의 주도권은 {monInitiative}.')
-        if playerInitiative >= monInitiative:
-            print('주도권 승! 선공!')
-            num = int(input("공격방식을 선택해 주세요 1: 일반공격 2: 마법공격"))
-            chooseAttack(num, player, monster)
-            if(monster.hp <= 0):
-                print('You Win!')
+    while(1):  
+        # monInitiative = random.randrange(1,21) # random모듈의 randrange로 주도권 결정 1,21의 사이에서 
+        # playerInitiative = random.randrange(1,21) # 플레이어 주도권
+        # print(f'\n당신의 주도권은 {playerInitiative}. {monster.name}의 주도권은 {monInitiative}.')
+        #choice_initi = check_initi(player,monster) # 선공 정해주는 함수
+        if check_initi(player,monster) == 1:
+            print('주도권 승! 선공!') # 플레이어선공
+            choice_num = int(input("공격방식을 선택해 주세요 1: 일반공격 2: 마법공격"))
+            chooseAttack(choice_num, player, monster)  # 플레이어 공격
+            if check_status(player, monster) == 1:
                 break
-            if(player.hp <= 0):
-                print('You Lose!')
+            monster.attack(player) # 몬스터 공격
+            if check_status(player, monster) == 1:
                 break
-            monster.attack(player)
-            if(monster.hp <= 0):
-                print('You Win!')
-                break
-            if(player.hp <= 0):
-                print('You Lose!')
-                break
-        else:
+        else: #몬스터선공
             print('주도권 패! 후공!')
-            monster.attack(player)
-            if(monster.hp <= 0):
-                print('You Win!')
+            monster.attack(player) #몬스터 공격
+            if check_status(player, monster) == 1:
                 break
-            if(player.hp <= 0):
-                print('You Lose!')
-                break
-            num = int(input("공격방식을 선택해 주세요 1: 일반공격 2: 마법공격"))
-            chooseAttack(num, player, monster)
-            if(monster.hp <= 0):
-                print('You Win!')
-                break
-            if(player.hp <= 0):
-                print('You Lose!')
+            choice_num = int(input("공격방식을 선택해 주세요 1: 일반공격 2: 마법공격"))
+            chooseAttack(choice_num, player, monster)  # 플레이어 공격
+            if check_status(player, monster) == 1: 
                 break
 
+# == 같다
+# >= 같거나 크다
+# <= 작거나 같다
+# != 같지 않다
+# < 작다
+# > 크다
 
+#-----------------------------------------------------------------------            
+#페어프로그래밍 목표: while 문 안의 반복되는 조건문들을 함수로 구현해 모듈화.
+#-----------------------------------------------------------------------
 
 playerName = input('당신의 이름은?')
 playerHp = random.randrange(300,400)
